@@ -12,25 +12,21 @@ const dbPlugin = require('./plugins/db')
 
 // Import routes
 const authRoutes = require('./routes/auth.routes')
-// todoRoutes
 const todoRoutes = require('./routes/todo.routes')
 
-// Create Fastify instance with logging
-const app = fastify({
-    logger: false
-});
 
-async function start() {
-    try {
-        
-        // 2. Database plugin
-        await app.register(dbPlugin);
+function createApp() {
+    
+    // Create Fastify instance with logging
+    const app = fastify({
+        logger: false
+    });
 
-        app.register(cors, { origin: '*' });
+    app.register(cors, { origin: '*' });
 
         // 3. Routes
-        await app.register(authRoutes, { prefix: '/api/v1/auth'})
-        await app.register(todoRoutes, { prefix: '/api/v1/todos' });
+        app.register(authRoutes, { prefix: '/api/v1/auth'})
+        app.register(todoRoutes, { prefix: '/api/v1/todos' });
 
         app.get('/health', async () => {
             return {
@@ -40,22 +36,33 @@ async function start() {
             };
         });
 
+    return app;
+}
+
+// Function to start server (for production/development)
+async function startServer() {
+    try {
+        const app = createApp();
+
+        // 2. Database plugin
+        await app.register(dbPlugin);
+
+    
         const port = process.env.PORT || 4000;
         await app.listen({ port , host: '0.0.0.0'})
 
-        
-        console.log(`
-        ═══════════════════════════════════════════════
-        🚀 Server running on http://localhost:${port}
-        📝 API docs available at http://localhost:${port}
-        ❤️  Health check: http://localhost:${port}/health
-        ═══════════════════════════════════════════════
-        `);
+        console.log(`🚀 Server running on http://localhost:${port}`);
 
+        return app
     } catch(err){
         app.log.error(err)
         process.exit(1)
     }
+}
+
+// For direct execution (npm run dev)
+if (require.main === module) {
+  startServer().catch(console.error);
 }
 
 // Graceful shutdown
@@ -65,7 +72,5 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-start();
+module.exports = { createApp, startServer };
 
-
-module.exports = app;

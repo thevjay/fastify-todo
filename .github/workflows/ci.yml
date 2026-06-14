@@ -28,3 +28,10 @@ jobs:
          
             - name: "List directories"
               run: ls
+
+            - name: "Run tests"
+              run: npm run test
+
+            # - name: "Run build"          TS -> JS
+            #   run: npm run build
+
