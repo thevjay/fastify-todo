@@ -51,4 +51,5 @@ jobs:
                   package-lock.json
                   README.md
                   vercel.json
+                  index.js
 
