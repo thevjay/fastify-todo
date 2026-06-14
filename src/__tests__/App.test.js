@@ -1,32 +1,32 @@
-// __tests__/app.test.js
-const { createApp } = require('../app'); // Your Fastify instance
+const { createApp } = require('../src/app');
 
 describe('Fastify App Tests', () => {
-  let fastify;
+  let app;
 
   beforeAll(async () => {
-    // Create fresh app instance for testing
-    fastify = createApp();
-    
-    // Connect to test database
     process.env.NODE_ENV = 'test';
-    await fastify.ready();
-  },3000); // Increased timeout for DB connection
 
-  afterAll(async () => {
-    await fastify.close();
+    app = await createApp();
+    await app.ready();
   });
 
-  // Test health endpoint
+  afterAll(async () => {
+    await app.close();
+  });
+
   test('GET /health should return 200', async () => {
-    const response = await fastify.inject({
+    const response = await app.inject({
       method: 'GET',
       url: '/health'
     });
 
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.payload)).toHaveProperty('status');
+
+    const body = JSON.parse(response.payload);
+
+    expect(body.status).toBe('OK');
   });
+
 
 //   // Test register endpoint
 //   test('POST /api/v1/auth/register should create user', async () => {
