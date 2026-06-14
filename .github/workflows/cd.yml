@@ -37,4 +37,4 @@ jobs:
 
             - name: Health Check
               run: |
-                curl -f https://your-app.vercel.app/health
+                curl -f https://cicdfastifyproject-8bcsea4au-vijays-projects-f6c4f781.vercel.app/health
