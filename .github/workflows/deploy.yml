@@ -24,7 +24,7 @@ jobs:
           run: npm test || echo "NO tests yet"
 
         - name: Check if code is working
-          run: node -e "console.log("✅ Code is valid")"
+          run: node -e "console.log('✅ Code is valid')"
   
   # CD - Deploy to Vercel        
   deploy:
