@@ -28,7 +28,9 @@ jobs:
                 run-id: ${{ github.event.workflow_run.id }}
                 github-token: ${{ github.token }}
             
+            - name: Show downloaded files
+              run: |
+                pwd
+                find .
             - name: "Deploy to vercel"
               run: vercel --prod --token=${{secrets.VERCEL_TOKEN }} --confirm --name=cicdfastifyproject
-            #   env:
-            #     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN}}

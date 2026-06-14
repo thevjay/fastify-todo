@@ -46,10 +46,10 @@ jobs:
               with:
                 name: fastify-todo-build
                 path: |
+                  api/
                   src/
                   package.json
                   package-lock.json
                   README.md
                   vercel.json
-                  index.js
 
