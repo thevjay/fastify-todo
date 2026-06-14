@@ -35,3 +35,20 @@ jobs:
             # - name: "Run build"          TS -> JS
             #   run: npm run build
 
+            # - name: "Upload product-ready build files"
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #     name: build
+            #     path: dist
+
+            - name: "Upload backend artifact"
+              uses: actions/upload-artifact@v4
+              with:
+                name: fastify-todo-build
+                path: |
+                  src/
+                  package.json
+                  package-lock.json
+                  README.md
+                  vercel.json
+
