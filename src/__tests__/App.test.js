@@ -1,4 +1,4 @@
-const { createApp } = require('../src/app');
+const { createApp } = require('../app');
 
 describe('Fastify App Tests', () => {
   let app;
