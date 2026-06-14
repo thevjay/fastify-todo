@@ -5,6 +5,7 @@ on:
         workflows: ["fastify-todo CI Pipeline / Workflow"]
         types:
             - completed
+    
 
 jobs:
     deploy:
