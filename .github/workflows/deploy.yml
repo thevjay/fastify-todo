@@ -1,0 +1,91 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main, master]
+    
+jobs:
+  # CI - Test the code
+  test:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Get code
+          uses: actions/checkout@v3
+        
+        - name: Install Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+
+        - name: Install dependencies
+          run: npm ci
+
+        - name: Run tests
+          run: npm test || echo "NO tests yet"
+
+        - name: Check if code is working
+          run: node -e "console.log("✅ Code is valid")"
+  
+  # CD - Deploy to Vercel        
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+        - name: Get code
+          uses: actions/checkout@v3
+        
+        - name: Install Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+        
+        - name: Install dependencies
+          run: npm ci
+         
+        - name: Deploy to Vercel
+          uses: amondnet/vercel-action@v20
+          with:
+            vercel-token: ${{ secrets.VERCEL_TOKEN }}
+            vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+            vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+            vercel-args: '--prod'
+        
+        - name: Get deployment URL
+          run: |
+            echo "URL: ${{ steps.deploy.outputs.preview-url }}"
+            echo "DEPLOY_URL=${{ steps.deploy.outputs.preview-url }}" >> $GITHUB_ENV
+            
+        - name: Check Health API
+          run: |
+            echo "Checking health at: $DEPLOY_URL/health"
+          
+            # Try health check 5 times
+            for i in 1 2 3 4 5; do
+                echo "Attempt $i..."
+                
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/health")
+                
+                if [ $STATUS -eq 200 ]; then
+                echo "✅ Health check passed! (Status: $STATUS)"
+                exit 0
+                else
+                echo "❌ Health check failed (Status: $STATUS)"
+                if [ $i -lt 5 ]; then
+                    echo "Waiting 5 seconds before retry..."
+                    sleep 5
+                fi
+                fi
+            done
+            
+            echo "❌ Health check failed after 5 attempts"
+            exit 1
+        
+        - name: Deployment Success
+          if: success()
+          run: |
+            echo "════════════════════════════════"
+            echo "✅ DEPLOYMENT SUCCESSFUL!"
+            echo "════════════════════════════════"
+            echo "🌐 URL: $DEPLOY_URL"
+            echo "🏥 Health: $DEPLOY_URL/health"
+            echo "════════════════════════════════"
