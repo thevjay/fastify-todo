@@ -34,3 +34,7 @@ jobs:
                 find .
             - name: "Deploy to vercel"
               run: vercel --prod --token=${{secrets.VERCEL_TOKEN }} --confirm --name=cicdfastifyproject
+
+            - name: Health Check
+              run: |
+                curl -f https://your-app.vercel.app/health
